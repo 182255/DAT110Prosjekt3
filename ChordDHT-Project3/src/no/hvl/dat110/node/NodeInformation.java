@@ -10,6 +10,12 @@ import java.rmi.RemoteException;
 import no.hvl.dat110.rpc.interfaces.ChordNodeInterface;
 import no.hvl.dat110.util.Util;
 
+/**
+ * 
+ * used to print out information about the status of the node
+ * (IP, ID, finger table entries, current keys)
+ *
+ */
 public class NodeInformation extends Thread{
 	
 	private ChordNodeInterface chordnode;

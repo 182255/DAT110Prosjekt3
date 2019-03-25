@@ -4,6 +4,12 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.rmi.RemoteException;
 
+/**
+ * 
+ *Used to store the message we want to send among the nodes. 
+ *It is also used to send back acknowledgements to the sender process
+ *
+ */
 public class Message implements Serializable {
 	
 

@@ -3,8 +3,8 @@ package no.hvl.dat110.node;
 
 
 /**
- * project/exercise/demo purpose in dat110
- * @author tdoy
+ * implements the ChordNodeInterface
+ * 
  *
  */
 

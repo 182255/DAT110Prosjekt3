@@ -8,6 +8,8 @@ import no.hvl.dat110.rpc.interfaces.ChordNodeInterface;
 import no.hvl.dat110.util.Util;
 
 /**
+ * runs periodically until the specified ttl after which the node 
+ * leaves the ring and or it continues forever of loopforever=true
  * @author tdoy
  *
  */

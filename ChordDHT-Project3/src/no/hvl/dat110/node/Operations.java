@@ -20,6 +20,11 @@ import java.util.Set;
 import no.hvl.dat110.rpc.interfaces.ChordNodeInterface;
 import no.hvl.dat110.util.Util;
 
+/**
+ * Handles the actual read and write requests and operations 
+ * from the client process
+ *
+ */
 public class Operations implements Serializable {
 	
 	/**
