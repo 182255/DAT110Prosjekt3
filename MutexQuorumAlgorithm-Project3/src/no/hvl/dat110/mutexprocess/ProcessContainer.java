@@ -7,7 +7,10 @@ import java.util.Random;
 
 import no.hvl.dat110.interfaces.ProcessInterface;
 
-
+/**
+ * The 'server' for the MutexProcess
+ *
+ */
 public class ProcessContainer {
 	
 	public ProcessContainer(String procName, int procId) {
