@@ -80,11 +80,14 @@ public class MutexProcess extends UnicastRemoteObject implements ProcessInterfac
 
 	public void acquireLock() throws RemoteException {
 		// logical clock update and set CS variable
+		CS_BUSY = true;
 	}
 
 	public void releaseLocks() throws RemoteException {
 
 		// release your lock variables and logical clock update
+		CS_BUSY = false;
+
 	}
 
 	public boolean requestWriteOperation(Message message) throws RemoteException {
@@ -121,7 +124,7 @@ public class MutexProcess extends UnicastRemoteObject implements ProcessInterfac
 		replicas.remove(this.procStubname); // remove this process from the list
 
 		// randomize - shuffle list each time - to get random processes each time
-
+		Collections.shuffle(replicas);
 		// multicast message to N/2 + 1 processes (random processes) - block until
 		// feedback is received
 
@@ -140,6 +143,7 @@ public class MutexProcess extends UnicastRemoteObject implements ProcessInterfac
 	public Message onMessageReceived(Message message) throws RemoteException {
 
 		// increment the local clock
+		incrementclock();
 
 		// Hint: for all 3 cases, use Message to send GRANT or DENY. e.g.
 		// message.setAcknowledgement(true) = GRANT
@@ -167,8 +171,14 @@ public class MutexProcess extends UnicastRemoteObject implements ProcessInterfac
 		// count the number of yes (i.e. where message.isAcknowledged = true)
 		// check if it is the majority or not
 		// return the decision (true or false)
+		int c = 0;
+		for (Message m : queueACK) {
+			if (m.isAcknowledged()) {
+				c++;
+			}
+		}
 
-		return false; // change this to the result of the vote
+		return c > quorum; // change this to the result of the vote
 	}
 
 	@Override
@@ -187,6 +197,14 @@ public class MutexProcess extends UnicastRemoteObject implements ProcessInterfac
 		// check the operation type: we expect a WRITE operation to do this.
 		// perform operation by using the Operations class
 		// Release locks after this operation
+		if (message.getOptype() == OperationType.WRITE) {
+			acquireLock();
+
+			Operations op = new Operations(this, message);
+			op.performOperation();
+
+			releaseLocks();
+		}
 
 	}
 
@@ -198,6 +216,11 @@ public class MutexProcess extends UnicastRemoteObject implements ProcessInterfac
 		// replicas (voters)
 		// otherwise if this is a READ operation multicast releaselocks to the replicas
 		// (voters)
+		if (message.getOptype().equals(OperationType.WRITE)) {
+			multicastMessage(message, quorum);
+		} else {
+			releaseLocks();
+		}
 	}
 
 	@Override
