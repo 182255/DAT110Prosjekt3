@@ -311,7 +311,7 @@ public class Node extends UnicastRemoteObject implements ChordNodeInterface {
 	private boolean multicastMessage(Message message) throws AccessException, RemoteException {
 		
 		// the same as MutexProcess - see MutexProcess
-		fingerTable.remove(this.nodeID);
+		fingerTable.remove(this);
 		
 		Collections.shuffle(fingerTable);
 		
