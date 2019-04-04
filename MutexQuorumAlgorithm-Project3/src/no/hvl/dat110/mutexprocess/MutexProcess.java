@@ -103,7 +103,7 @@ public class MutexProcess extends UnicastRemoteObject implements ProcessInterfac
 		// multicast read request to start the voting to N/2 + 1 replicas (majority) -
 		// optimal. You could as well send to all the replicas that have the file
 
-		return multicastMessage(message, N); // change to the election result
+		return multicastMessage(message, quorum); // change to the election result
 	}
 
 	public boolean requestReadOperation(Message message) throws RemoteException {
@@ -117,7 +117,7 @@ public class MutexProcess extends UnicastRemoteObject implements ProcessInterfac
 		// multicast read request to start the voting to N/2 + 1 replicas (majority) -
 		// optimal. You could as well send to all the replicas that have the file
 
-		return multicastMessage(message, N); // change to the election result
+		return multicastMessage(message, quorum); // change to the election result
 	}
 
 	// multicast message to N/2 + 1 processes (random processes)
@@ -179,7 +179,7 @@ public class MutexProcess extends UnicastRemoteObject implements ProcessInterfac
 		/**
 		 * case 2: Receiver already has access to the resource: DENY and reply
 		 */
-		if (CS_BUSY && WANTS_TO_ENTER_CS) {
+		if (CS_BUSY) {
 			message.setAcknowledged(false);
 			return message;
 		}
@@ -240,12 +240,11 @@ public class MutexProcess extends UnicastRemoteObject implements ProcessInterfac
 		// check the operation type: we expect a WRITE operation to do this.
 		// perform operation by using the Operations class
 		// Release locks after this operation
-		if (message.getOptype().equals(OperationType.WRITE)) {
+		if (message.getOptype() == OperationType.WRITE) {
 			Operations op = new Operations(this, message);
 			op.performOperation();
-
 			releaseLocks();
-		}
+		} 
 
 	}
 
@@ -259,9 +258,9 @@ public class MutexProcess extends UnicastRemoteObject implements ProcessInterfac
 		// (voters)
 		Operations op = new Operations(this, message);
 
-		if (message.getOptype().equals(OperationType.WRITE)) {
+		if (message.getOptype() == OperationType.WRITE) {
 			op.multicastOperationToReplicas(message);
-		} else {
+		} else if(message.getOptype() == OperationType.READ) {
 			op.multicastReadReleaseLocks();
 		}
 	}
